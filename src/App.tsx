@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import ProductCard from "./components/ProductCard";
 import { IProduct } from "./types/product";
 import { API_URL } from "./utils";
+import { ShoppingCartContext } from "./context";
 
 function App() {
   const [productsList, setProductsList] = useState<IProduct[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState(null);
+
+  const context = useContext(ShoppingCartContext);
 
   const fetchProducts = async () => {
     try {
@@ -39,9 +42,16 @@ function App() {
 
   if (error) return <p>Error: {error}</p>;
 
-  return productsList.map((product) => (
-    <ProductCard key={product.id} {...product} />
-  ));
+  return (
+    <>
+      <div>Items en el carrito: {context.count}</div>
+      <div>
+        {productsList.map((product) => (
+          <ProductCard key={product.id} {...product} />
+        ))}
+      </div>
+    </>
+  );
 }
 
 export default App;
