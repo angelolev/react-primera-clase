@@ -1,6 +1,6 @@
 interface ICategory {
   id: number;
-  iname: string;
+  name: string;
   image: string;
 }
 

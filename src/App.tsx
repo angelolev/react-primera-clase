@@ -1,42 +1,15 @@
-import { useEffect, useState, useContext } from "react";
+import { useContext } from "react";
 import ProductCard from "./components/ProductCard";
-import { IProduct } from "./types/product";
 import { API_URL } from "./utils";
 import { ShoppingCartContext } from "./context";
+import { useFetch } from "./hooks/useFetch";
+import { IProduct } from "./types/product";
 
 function App() {
-  const [productsList, setProductsList] = useState<IProduct[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState(null);
+  const URL = `${API_URL}/products?offset=0&limit=10`;
+  const { data, loading, error } = useFetch<IProduct[]>(URL);
 
   const context = useContext(ShoppingCartContext);
-
-  const fetchProducts = async () => {
-    try {
-      setLoading(true);
-
-      const response = await fetch(`${API_URL}/products?offset=0&limit=10`);
-
-      if (!response.ok) {
-        throw new Error("algo fallo");
-      }
-
-      const data = await response.json();
-
-      setProductsList(data);
-      setError(null);
-    } catch (err) {
-      console.log(err);
-      setError(err.message);
-      setProductsList([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   if (loading) return <p>Cargando...</p>;
 
@@ -46,7 +19,7 @@ function App() {
     <>
       <div>Items en el carrito: {context.count}</div>
       <div>
-        {productsList.map((product) => (
+        {data?.map((product) => (
           <ProductCard key={product.id} {...product} />
         ))}
       </div>
